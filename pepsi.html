@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEPSI — Refresh Your World</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #004B93;
+  --blue-dark: #00306B;
+  --blue-light: #0066CC;
+  --red: #E31837;
+  --red-dark: #B8102C;
+  --white: #FFFFFF;
+  --off-white: #F2F6FF;
+  --ink: #07101F;
+  --cyan: #00ADEF;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--off-white);
+  color: var(--ink);
+  cursor: none;
+  overflow-x: hidden;
+}
+body.night { background: var(--ink); color: #e8f0ff; }
+
+/* ── CURSOR ── */
+#cur {
+  position:fixed; width:14px; height:14px;
+  background:var(--red); border-radius:50%;
+  pointer-events:none; z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:width .15s, height .15s, background .2s;
+}
+#cur-ring {
+  position:fixed; width:38px; height:38px;
+  border:2px solid var(--blue); border-radius:50%;
+  pointer-events:none; z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:width .2s, height .2s, border-color .2s;
+}
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px; height:68px;
+  background:var(--blue);
+  border-bottom:3px solid var(--red);
+}
+.nav-globe {
+  width:38px; height:38px; border-radius:50%;
+  background:conic-gradient(var(--red) 0 50%, var(--blue-light) 50% 100%);
+  border:3px solid var(--white); flex-shrink:0;
+  position:relative; overflow:hidden; cursor:none;
+}
+.nav-globe::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 60%);
+  border-radius:50%;
+}
+.nav-brand {
+  font-family:'Anton',sans-serif; font-size:1.55rem;
+  color:#fff; letter-spacing:4px; margin-left:13px;
+  text-decoration:none;
+}
+.nav-left { display:flex; align-items:center; }
+.nav-links { display:flex; gap:2px; align-items:center; }
+.nav-links a {
+  color:rgba(255,255,255,.75); text-decoration:none;
+  font-family:'Barlow Condensed',sans-serif; font-weight:600;
+  font-size:.78rem; letter-spacing:2px; text-transform:uppercase;
+  padding:6px 13px; border-radius:4px; transition:color .2s,background .2s;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,.12); }
+#nightBtn {
+  margin-left:14px; padding:6px 18px;
+  background:var(--red); color:#fff; border:none;
+  font-family:'Barlow Condensed',sans-serif; font-weight:700;
+  letter-spacing:2px; font-size:.78rem; border-radius:4px;
+  cursor:none; transition:background .2s;
+}
+#nightBtn:hover { background:var(--red-dark); }
+
+/* ── SECTION SYSTEM ── */
+.s-label {
+  font-family:'Barlow Condensed',sans-serif; font-size:.72rem;
+  font-weight:700; letter-spacing:4px; text-transform:uppercase;
+  color:var(--red); margin-bottom:10px;
+  display:flex; align-items:center; gap:10px;
+}
+.s-label::before {
+  content:''; display:inline-block; width:28px; height:3px;
+  background:var(--red); border-radius:2px;
+}
+.s-title {
+  font-family:'Anton',sans-serif; font-size:clamp(2.8rem,7vw,6rem);
+  line-height:.9; letter-spacing:-1px; text-transform:uppercase;
+}
+.s-title em { font-style:italic; color:var(--red); }
+.s-sub { font-family:'Barlow',sans-serif; font-weight:300; font-size:.95rem; opacity:.6; margin-top:12px; max-width:420px; }
+
+/* splash */
+.splash { position:fixed; border-radius:50%; pointer-events:none; z-index:9998; animation:sOut .7s ease-out forwards; }
+@keyframes sOut { from{opacity:1;transform:translate(0,0) scale(1);} to{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);} }
+
+/* confetti */
+.cf { position:fixed; pointer-events:none; z-index:9001; animation:cfF 2s ease-in forwards; }
+@keyframes cfF { from{transform:translateY(-80px) rotate(0);opacity:1;} to{transform:translateY(110vh) rotate(800deg);opacity:0;} }
+
+/* fly */
+.fly { position:fixed; pointer-events:none; z-index:9997; font-size:2rem; transition:all .6s cubic-bezier(.3,0,.2,1); }
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+#hero {
+  position:relative; height:100vh; min-height:680px;
+  overflow:hidden; display:grid; grid-template-columns:1fr 1fr;
+  align-items:center;
+}
+#hero::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(118deg,var(--blue) 0%,var(--blue-dark) 100%);
+  clip-path:polygon(0 0, 62% 0, 50% 100%, 0 100%); z-index:0;
+}
+#hero::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,#eef3ff 0%,var(--off-white) 100%);
+  clip-path:polygon(62% 0, 100% 0, 100% 100%, 50% 100%); z-index:0;
+}
+body.night #hero::after { background:linear-gradient(135deg,#111e30,#0d1829); }
+#waveCanvas { position:absolute; inset:0; width:100%; height:100%; z-index:1; opacity:.1; pointer-events:none; }
+
+.hero-left { position:relative; z-index:2; padding:120px 50px 60px 80px; }
+.hero-tag-small {
+  font-family:'Barlow Condensed',sans-serif; font-size:.8rem;
+  font-weight:700; letter-spacing:5px; color:rgba(255,255,255,.5);
+  text-transform:uppercase; margin-bottom:22px;
+}
+.hero-h1 {
+  font-family:'Anton',sans-serif; font-size:clamp(4rem,9vw,8.5rem);
+  line-height:.87; color:#fff; text-transform:uppercase; letter-spacing:-2px;
+}
+.hero-h1 .stroke { -webkit-text-stroke:3px var(--red); color:transparent; }
+.hero-h1 .fill-red { color:var(--red); }
+.hero-sub {
+  font-family:'Barlow Condensed',sans-serif; font-size:clamp(.95rem,2vw,1.45rem);
+  font-weight:400; font-style:italic; color:rgba(255,255,255,.65);
+  margin-top:22px; letter-spacing:1px; line-height:1.35;
+}
+.hero-btn {
+  margin-top:38px; display:inline-flex; align-items:center; gap:11px;
+  padding:17px 38px; background:var(--red); color:#fff; border:none;
+  font-family:'Barlow Condensed',sans-serif; font-weight:900;
+  font-size:1.05rem; letter-spacing:3px; text-transform:uppercase; cursor:none;
+  clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,11px 100%,0 calc(100% - 11px));
+  transition:background .2s,transform .15s;
+}
+.hero-btn:hover { background:#ff1c3c; transform:translateY(-2px); }
+.hero-stats { margin-top:48px; display:flex; gap:36px; }
+.hstat-val { font-family:'Anton',sans-serif; font-size:2rem; color:#fff; line-height:1; }
+.hstat-val.red { color:var(--red); }
+.hstat-lbl { font-size:.66rem; letter-spacing:3px; color:rgba(255,255,255,.42); text-transform:uppercase; margin-top:4px; }
+.hstat-div { width:1px; background:rgba(255,255,255,.15); }
+
+.hero-right { position:relative; z-index:2; display:flex; align-items:center; justify-content:center; padding:120px 60px 60px; }
+.globe-wrap { position:relative; width:clamp(240px,33vw,440px); height:clamp(240px,33vw,440px); animation:floatG 4s ease-in-out infinite; }
+@keyframes floatG { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-18px) rotate(3deg);} }
+.globe-glow { position:absolute; inset:-30px; border-radius:50%; background:radial-gradient(circle,rgba(0,163,224,.28) 0%,transparent 70%); animation:glowP 3s ease-in-out infinite; }
+@keyframes glowP { 0%,100%{opacity:.55;transform:scale(1);} 50%{opacity:1;transform:scale(1.1);} }
+.globe-svg { width:100%; height:100%; }
+.globe-tag {
+  position:absolute; background:var(--blue); color:#fff;
+  font-family:'Barlow Condensed',sans-serif; font-weight:700;
+  font-size:.68rem; letter-spacing:2px; padding:5px 13px;
+  border-left:3px solid var(--red); animation:tagF 5s ease-in-out infinite; white-space:nowrap;
+}
+.globe-tag:nth-child(1){top:7%;right:-13%;animation-delay:0s;}
+.globe-tag:nth-child(2){top:43%;left:-18%;animation-delay:1.3s;}
+.globe-tag:nth-child(3){bottom:11%;right:-11%;animation-delay:2.6s;}
+@keyframes tagF { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+.scroll-hint {
+  position:absolute; bottom:34px; left:80px; z-index:4;
+  display:flex; align-items:center; gap:10px;
+  color:rgba(255,255,255,.45); font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem; letter-spacing:3px; animation:sHint 2s ease-in-out infinite;
+}
+@keyframes sHint { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
+.scroll-line { width:1px; height:38px; background:linear-gradient(180deg,rgba(255,255,255,.45),transparent); }
+
+/* ══════════════════════════════
+   FLAVORS
+══════════════════════════════ */
+#flavors { padding:110px 80px; position:relative; overflow:hidden; transition:background .5s; }
+#flavors::before { content:''; position:absolute; top:-60px; right:-60px; width:320px; height:320px; border-radius:50%; background:var(--red); opacity:.05; pointer-events:none; }
+.flavors-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-top:60px; }
+.flavor-shelf { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.fcard {
+  position:relative; border-radius:16px; padding:26px 16px 20px;
+  cursor:none; overflow:hidden; transition:transform .25s,box-shadow .25s;
+  border:2px solid transparent;
+}
+.fcard::before { content:''; position:absolute; inset:0; background:linear-gradient(160deg,rgba(255,255,255,.18) 0%,transparent 60%); border-radius:14px; }
+.fcard:hover { transform:translateY(-8px) scale(1.04); box-shadow:0 24px 48px rgba(0,0,0,.28); }
+.fcard.sel { border-color:rgba(255,255,255,.55); }
+.fcard-icon { font-size:2.5rem; display:block; margin-bottom:9px; }
+.fcard-name { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:.95rem; letter-spacing:2px; text-transform:uppercase; color:#fff; }
+.fcard-cal { font-size:.65rem; color:rgba(255,255,255,.55); margin-top:3px; letter-spacing:1px; }
+.fbubbles { position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:14px; }
+.fb { position:absolute; border-radius:50%; background:rgba(255,255,255,.22); animation:fbR 1.8s ease-in infinite; }
+@keyframes fbR { from{transform:translateY(0);opacity:.6;} to{transform:translateY(-130px);opacity:0;} }
+
+.flavor-panel { position:relative; }
+.fp-number { font-family:'Anton',sans-serif; font-size:8rem; line-height:1; opacity:.055; position:absolute; top:-20px; right:0; color:var(--blue); user-select:none; pointer-events:none; }
+body.night .fp-number { color:#fff; }
+.fp-chip { display:inline-block; background:var(--red); color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.68rem; letter-spacing:3px; padding:4px 12px; margin-bottom:15px; }
+.fp-name { font-family:'Anton',sans-serif; font-size:clamp(2.2rem,4.5vw,3.5rem); line-height:1; text-transform:uppercase; letter-spacing:-1px; transition:color .3s; }
+.fp-desc { margin-top:15px; font-size:.93rem; line-height:1.65; opacity:.68; max-width:380px; }
+.fp-stat { margin-top:26px; display:flex; gap:28px; }
+.fp-stat-item { text-align:center; }
+.fp-stat-val { font-family:'Anton',sans-serif; font-size:2rem; color:var(--blue); display:block; }
+body.night .fp-stat-val { color:var(--cyan); }
+.fp-stat-lbl { font-size:.65rem; letter-spacing:2px; opacity:.48; text-transform:uppercase; }
+
+/* ══════════════════════════════
+   COOL METER
+══════════════════════════════ */
+#coolmeter {
+  background:var(--blue-dark); padding:110px 80px;
+  position:relative; overflow:hidden; color:#fff;
+}
+#coolmeter::before {
+  content:'COOL'; font-family:'Anton',sans-serif; font-size:22vw;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  color:rgba(255,255,255,.03); pointer-events:none; white-space:nowrap; letter-spacing:-4px;
+}
+.cool-inner { display:grid; grid-template-columns:1fr 400px 1fr; gap:60px; align-items:center; position:relative; z-index:1; margin-top:60px; }
+.cool-side { text-align:center; }
+.thermo-outer { width:26px; height:230px; background:rgba(255,255,255,.08); border-radius:18px; border:2px solid rgba(255,255,255,.14); position:relative; overflow:hidden; margin:0 auto; }
+.thermo-inner { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(0deg,var(--cyan) 0%,var(--red) 100%); border-radius:0 0 16px 16px; transition:height .08s; }
+.cool-val { font-family:'Anton',sans-serif; font-size:4.5rem; color:var(--cyan); line-height:1; margin-top:14px; }
+.cool-unit { font-family:'Barlow Condensed',sans-serif; font-size:.72rem; letter-spacing:4px; opacity:.45; margin-top:3px; }
+.cool-center { text-align:center; }
+.cool-can { font-size:8rem; display:block; animation:cWobble .4s ease-in-out infinite; margin-bottom:22px; }
+@keyframes cWobble { 0%,100%{transform:rotate(-4deg);} 50%{transform:rotate(4deg);} }
+.cool-btn {
+  display:inline-flex; align-items:center; gap:9px;
+  padding:17px 42px; background:#fff; color:var(--blue); border:none;
+  font-family:'Barlow Condensed',sans-serif; font-weight:900;
+  font-size:1.15rem; letter-spacing:4px; text-transform:uppercase; cursor:none;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+  transition:background .2s,transform .1s;
+}
+.cool-btn:hover { background:var(--cyan); color:#000; }
+.cool-btn:active { transform:scale(.96); }
+.cool-reset { margin-top:12px; background:transparent; border:2px solid rgba(255,255,255,.28); color:rgba(255,255,255,.55); padding:10px 26px; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:3px; font-size:.82rem; cursor:none; border-radius:4px; transition:border-color .2s,color .2s; }
+.cool-reset:hover { border-color:#fff; color:#fff; }
+.cool-instr { font-family:'Barlow Condensed',sans-serif; font-size:.75rem; letter-spacing:3px; opacity:.4; margin-bottom:22px; text-transform:uppercase; }
+
+/* ══════════════════════════════
+   WORLD MAP
+══════════════════════════════ */
+#worldmap { padding:110px 80px; position:relative; overflow:hidden; }
+body.night #worldmap { background:#0d1829; }
+.map-layout { display:grid; grid-template-columns:1fr 340px; gap:60px; align-items:start; margin-top:60px; }
+.world-flags { display:flex; flex-wrap:wrap; gap:9px; }
+.wflag {
+  width:62px; height:62px; border-radius:12px; background:var(--blue);
+  display:flex; align-items:center; justify-content:center; font-size:1.75rem;
+  cursor:none; transition:transform .2s,box-shadow .2s,background .2s; border:2px solid transparent;
+}
+.wflag:hover { transform:scale(1.26) translateY(-5px); box-shadow:0 12px 32px rgba(0,75,147,.4); background:var(--blue-light); border-color:var(--cyan); z-index:10; }
+.wflag.sel { background:var(--red); border-color:var(--red-dark); }
+.map-panel { background:var(--blue); border-radius:20px; padding:34px; color:#fff; position:sticky; top:88px; min-height:210px; border-left:5px solid var(--red); }
+.mp-flag { font-size:3.2rem; display:block; margin-bottom:11px; }
+.mp-country { font-family:'Anton',sans-serif; font-size:1.8rem; letter-spacing:2px; line-height:1; }
+.mp-fact { margin-top:13px; font-size:.88rem; line-height:1.65; opacity:.78; }
+.mp-tag { margin-top:18px; display:inline-block; background:var(--red); padding:4px 13px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.68rem; letter-spacing:3px; }
+
+/* ══════════════════════════════
+   VIBE
+══════════════════════════════ */
+#vibe { background:var(--ink); padding:110px 80px; position:relative; overflow:hidden; color:#fff; }
+#vibe::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--blue),var(--red),var(--cyan)); }
+.vibe-tabs { display:flex; gap:0; margin-top:44px; border-bottom:2px solid rgba(255,255,255,.1); }
+.vtab { padding:13px 30px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.83rem; letter-spacing:3px; text-transform:uppercase; background:transparent; border:none; color:rgba(255,255,255,.38); cursor:none; transition:color .2s; position:relative; }
+.vtab::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:3px; background:var(--red); transform:scaleX(0); transition:transform .25s; }
+.vtab.on { color:#fff; }
+.vtab.on::after { transform:scaleX(1); }
+.vtab:hover { color:rgba(255,255,255,.75); }
+.vibe-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:38px; }
+.vcard { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:26px 19px; cursor:none; transition:background .2s,transform .2s,border-color .2s; position:relative; overflow:hidden; }
+.vcard::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--red); border-radius:2px 0 0 2px; }
+.vcard:hover { background:rgba(255,255,255,.08); transform:translateY(-6px); border-color:rgba(255,255,255,.2); }
+.vcard-icon { font-size:2.1rem; display:block; margin-bottom:13px; }
+.vcard-artist { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:.95rem; letter-spacing:1px; }
+.vcard-track { font-size:.72rem; opacity:.42; margin-top:4px; }
+.vcard-play { margin-top:16px; width:34px; height:34px; border-radius:50%; border:2px solid rgba(255,255,255,.28); background:transparent; color:#fff; display:flex; align-items:center; justify-content:center; cursor:none; font-size:.85rem; transition:background .2s,border-color .2s; }
+.vcard-play:hover { background:var(--red); border-color:var(--red); }
+.vcard-play.on { background:var(--cyan); border-color:var(--cyan); color:#000; }
+.viz { display:flex; gap:3px; align-items:flex-end; height:26px; margin-top:13px; }
+.vb { width:4px; border-radius:2px; background:var(--cyan); transition:height .1s; }
+.vb.on { animation:vzP .6s ease-in-out infinite; }
+@keyframes vzP { 0%,100%{transform:scaleY(.25);} 50%{transform:scaleY(1);} }
+
+/* ══════════════════════════════
+   QUIZ
+══════════════════════════════ */
+#quiz { padding:110px 80px; position:relative; overflow:hidden; }
+body.night #quiz { background:#0d1829; }
+.quiz-layout { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-top:60px; }
+.quiz-deco { position:relative; display:flex; align-items:center; justify-content:center; min-height:300px; }
+.qdring1 { position:absolute; width:280px; height:280px; border-radius:50%; border:40px solid var(--blue); opacity:.07; }
+.qdring2 { position:absolute; width:190px; height:190px; border-radius:50%; border:3px solid var(--red); opacity:.28; animation:spinR 8s linear infinite; }
+@keyframes spinR { to{transform:rotate(360deg);} }
+.qdemo { font-size:7rem; position:relative; z-index:1; }
+.quiz-card { background:var(--blue); border-radius:20px; padding:46px; color:#fff; position:relative; overflow:hidden; }
+.quiz-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--red),var(--cyan)); }
+.qprog { font-family:'Barlow Condensed',sans-serif; font-size:.7rem; letter-spacing:4px; opacity:.48; margin-bottom:18px; }
+.qbar { height:3px; background:rgba(255,255,255,.1); border-radius:2px; margin-bottom:22px; overflow:hidden; }
+.qbar-fill { height:100%; background:var(--red); border-radius:2px; transition:width .4s; }
+.qq { font-family:'Anton',sans-serif; font-size:1.75rem; letter-spacing:-.5px; line-height:1.1; margin-bottom:26px; }
+.qopts { display:flex; flex-direction:column; gap:9px; }
+.qopt { padding:13px 19px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.11); border-radius:10px; color:#fff; font-family:'Barlow',sans-serif; font-size:.88rem; cursor:none; text-align:left; transition:background .15s,border-color .15s,transform .15s; }
+.qopt:hover { background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.38); transform:translateX(6px); }
+.qresult { display:none; text-align:center; }
+.qr-emoji { font-size:5rem; animation:popI .4s ease; margin-bottom:14px; }
+@keyframes popI { from{transform:scale(0);} 60%{transform:scale(1.15);} to{transform:scale(1);} }
+.qr-name { font-family:'Anton',sans-serif; font-size:2.4rem; letter-spacing:2px; }
+.qr-tag { display:inline-block; background:var(--red); padding:4px 13px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.68rem; letter-spacing:3px; margin:11px 0; }
+.qr-desc { opacity:.72; font-size:.88rem; line-height:1.6; max-width:290px; margin:0 auto; }
+.q-replay { margin-top:22px; padding:11px 30px; background:#fff; color:var(--blue); font-family:'Barlow Condensed',sans-serif; font-weight:900; letter-spacing:3px; font-size:.88rem; cursor:none; border:none; border-radius:6px; transition:background .2s; }
+.q-replay:hover { background:var(--cyan); }
+
+/* ══════════════════════════════
+   BUBBLE PHYSICS
+══════════════════════════════ */
+#bubbles { position:relative; height:580px; overflow:hidden; }
+body.night #bubbles { background:#080f1e; }
+#bubbCanvas { position:absolute; inset:0; width:100%; height:100%; }
+.bub-over { position:relative; z-index:2; padding:80px; pointer-events:none; }
+
+/* ══════════════════════════════
+   SCROLL STORY
+══════════════════════════════ */
+#story { height:400vh; position:relative; }
+.story-sticky { position:sticky; top:0; height:100vh; background:var(--ink); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.story-bg { position:absolute; inset:0; background:linear-gradient(118deg,var(--blue-dark) 0%,var(--ink) 60%); }
+.story-can { font-size:11rem; position:relative; z-index:3; filter:drop-shadow(0 0 60px rgba(0,173,239,.4)); transition:transform .05s; user-select:none; }
+.story-cap { position:absolute; bottom:100px; left:0; right:0; text-align:center; z-index:4; font-family:'Anton',sans-serif; font-size:clamp(1.8rem,5vw,4rem); letter-spacing:6px; color:rgba(255,255,255,0); transition:color .5s,transform .5s; }
+.story-side { position:absolute; right:54px; top:50%; transform:translateY(-50%) rotate(90deg); font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:.72rem; letter-spacing:5px; color:rgba(255,255,255,.18); z-index:4; }
+
+/* ══════════════════════════════
+   STORE
+══════════════════════════════ */
+#store { padding:110px 80px; position:relative; overflow:hidden; }
+body.night #store { background:#0d1829; }
+#store::before { content:'SHOP'; font-family:'Anton',sans-serif; font-size:22vw; position:absolute; top:50%; left:-2%; transform:translateY(-50%); color:var(--blue); opacity:.04; pointer-events:none; letter-spacing:-4px; line-height:1; }
+.store-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:58px; }
+.scard { border-radius:20px; overflow:hidden; background:var(--blue); cursor:none; transition:transform .25s,box-shadow .25s; position:relative; border:2px solid transparent; }
+.scard:hover { transform:translateY(-10px) rotate(-.5deg); box-shadow:0 32px 64px rgba(0,75,147,.35); border-color:var(--cyan); }
+.scard-top { padding:38px 28px 28px; background:linear-gradient(135deg,var(--blue-light) 0%,var(--blue-dark) 100%); text-align:center; position:relative; overflow:hidden; }
+.scard-top::before { content:''; position:absolute; bottom:-28px; left:-28px; right:-28px; height:56px; background:var(--blue); transform:skewY(-3deg); }
+.scard-emoji { font-size:4.2rem; display:block; position:relative; z-index:1; }
+.scard-bot { padding:22px 22px 26px; }
+.scard-name { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.05rem; letter-spacing:1px; color:#fff; }
+.scard-price { font-family:'Anton',sans-serif; font-size:1.5rem; color:var(--cyan); margin-top:4px; }
+.scard-add { margin-top:14px; width:100%; padding:11px; background:var(--red); color:#fff; border:none; cursor:none; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:.82rem; letter-spacing:3px; text-transform:uppercase; border-radius:8px; transition:background .2s,transform .1s; }
+.scard-add:hover { background:#ff1c3c; }
+.scard-add:active { transform:scale(.97); }
+
+/* Cart pill */
+#cartPill { position:fixed; top:78px; right:0; background:var(--red); color:#fff; padding:10px 18px 10px 15px; border-radius:12px 0 0 12px; display:flex; align-items:center; gap:9px; z-index:999; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:.82rem; letter-spacing:2px; box-shadow:-4px 4px 20px rgba(0,0,0,.28); }
+#cartPill.bump { animation:pBump .35s ease; }
+@keyframes pBump { 50%{transform:scale(1.12);} }
+.cart-cnt { background:#fff; color:var(--red); width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.72rem; }
+
+/* ── EASTER EGG ── */
+#egg { display:none; position:fixed; inset:0; z-index:99997; background:repeating-linear-gradient(45deg,#1a0a00 0px,#1a0a00 20px,#2a1400 20px,#2a1400 40px); align-items:center; justify-content:center; flex-direction:column; color:#fff; text-align:center; }
+#egg.show { display:flex; animation:eP .4s ease; }
+@keyframes eP { from{opacity:0;transform:scale(.85);} to{opacity:1;transform:scale(1);} }
+#egg h1 { font-family:'Anton',sans-serif; font-size:clamp(3rem,10vw,8rem); letter-spacing:6px; color:#FFD700; text-shadow:4px 4px 0 #8B6914; }
+#egg p { opacity:.68; margin-top:11px; font-size:1.05rem; letter-spacing:2px; }
+#egg button { margin-top:30px; padding:13px 34px; background:#FFD700; color:#1a0a00; border:none; cursor:none; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:.95rem; letter-spacing:4px; border-radius:6px; }
+#typehint { position:fixed; bottom:15px; right:15px; background:rgba(0,0,0,.72); color:var(--cyan); padding:6px 13px; border-radius:20px; font-family:'Barlow Condensed',sans-serif; font-size:.78rem; letter-spacing:4px; z-index:9998; opacity:0; transition:opacity .3s; }
+
+/* ── FOOTER ── */
+footer { background:var(--ink); border-top:3px solid var(--red); padding:58px 80px 38px; display:grid; grid-template-columns:1fr auto; gap:40px; align-items:start; color:rgba(255,255,255,.4); }
+.footer-brand { font-family:'Anton',sans-serif; font-size:2.8rem; letter-spacing:6px; color:#fff; display:block; margin-bottom:8px; }
+.footer-legal { font-size:.72rem; line-height:2; letter-spacing:1px; }
+.footer-links { display:flex; flex-direction:column; gap:8px; text-align:right; }
+.footer-links a { color:rgba(255,255,255,.4); text-decoration:none; font-family:'Barlow Condensed',sans-serif; font-size:.78rem; letter-spacing:2px; transition:color .2s; }
+.footer-links a:hover { color:#fff; }
+.footer-egg { font-size:.66rem; opacity:.28; margin-top:18px; letter-spacing:2px; }
+
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr;}
+  #hero::after{display:none;}
+  .hero-left{padding:120px 40px 60px;}
+  .hero-right{display:none;}
+  .flavors-grid,.map-layout,.quiz-layout{grid-template-columns:1fr;}
+  .cool-inner{grid-template-columns:1fr;}
+  .vibe-grid{grid-template-columns:repeat(2,1fr);}
+  .store-grid{grid-template-columns:repeat(2,1fr);}
+  section{padding:80px 40px!important;}
+  footer{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<div id="cartPill">🛒 CART <span class="cart-cnt" id="cartN">0</span></div>
+
+<div id="egg">
+  <div style="font-size:5rem">🕹️</div>
+  <h1>RETRO<br>ACTIVATED</h1>
+  <p>YOU FOUND THE SECRET. LEGEND STATUS.</p>
+  <button onclick="document.getElementById('egg').classList.remove('show')">BACK TO PEPSI</button>
+</div>
+<div id="typehint"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-globe" id="logoClick"></div>
+    <a class="nav-brand" href="#hero">PEPSI</a>
+  </div>
+  <div class="nav-links">
+    <a href="#flavors">Flavors</a>
+    <a href="#coolmeter">Game</a>
+    <a href="#worldmap">World</a>
+    <a href="#vibe">Vibes</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#store">Store</a>
+    <button id="nightBtn" onclick="toggleNight()">🌙 NIGHT</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="waveCanvas"></canvas>
+  <div class="hero-left">
+    <div class="hero-tag-small">Since 1893 · Original Cola</div>
+    <h1 class="hero-h1">
+      RE<span class="fill-red">FRESH</span><br>
+      <span class="stroke">YOUR</span><br>
+      WORLD
+    </h1>
+    <p class="hero-sub">Bold taste. Unstoppable energy.<br>One sip changes everything.</p>
+    <button class="hero-btn" onclick="crackOpen(event)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L8 8H4l4 6H2l10 14 10-14h-6l4-6h-4z"/></svg>
+      CRACK OPEN A PEPSI
+    </button>
+    <div class="hero-stats">
+      <div><div class="hstat-val">130+</div><div class="hstat-lbl">Countries</div></div>
+      <div class="hstat-div"></div>
+      <div><div class="hstat-val red">1893</div><div class="hstat-lbl">Founded</div></div>
+      <div class="hstat-div"></div>
+      <div><div class="hstat-val">6+</div><div class="hstat-lbl">Flavors</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="globe-wrap">
+      <div class="globe-glow"></div>
+      <svg class="globe-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="gClip"><circle cx="200" cy="200" r="188"/></clipPath>
+          <radialGradient id="gShine" cx="32%" cy="28%">
+            <stop offset="0%" stop-color="rgba(255,255,255,.32)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+          <filter id="gShadow"><feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="rgba(0,75,147,.6)"/></filter>
+        </defs>
+        <circle cx="200" cy="200" r="194" fill="rgba(0,20,60,.3)" filter="url(#gShadow)"/>
+        <rect x="12" y="12" width="376" height="194" fill="#004B93" clip-path="url(#gClip)"/>
+        <rect x="12" y="206" width="376" height="182" fill="#E31837" clip-path="url(#gClip)"/>
+        <path d="M12,200 Q100,138 200,200 Q300,262 388,200 L388,222 Q300,284 200,222 Q100,160 12,222 Z" fill="white" clip-path="url(#gClip)"/>
+        <circle cx="200" cy="200" r="188" fill="none" stroke="white" stroke-width="7"/>
+        <circle cx="200" cy="200" r="188" fill="url(#gShine)" clip-path="url(#gClip)"/>
+      </svg>
+      <div class="globe-tag">ORIGINAL COLA</div>
+      <div class="globe-tag">SINCE 1893</div>
+      <div class="globe-tag">130+ COUNTRIES</div>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div>SCROLL</div>
+</section>
+
+<!-- FLAVORS -->
+<section id="flavors">
+  <div class="s-label">02 — Flavor Lab</div>
+  <div class="s-title">PICK YOUR<br><em>PERFECT</em> CAN</div>
+  <div class="flavors-grid">
+    <div class="flavor-shelf" id="flavorShelf"></div>
+    <div class="flavor-panel" id="flavorPanel">
+      <div class="fp-number" id="fpNum">01</div>
+      <div class="fp-chip" id="fpChip">CLASSIC</div>
+      <div class="fp-name" id="fpName">Pepsi Classic</div>
+      <div class="fp-desc" id="fpDesc">The bold original. Crisp carbonation, deep cola character — the taste that defined a generation.</div>
+      <div class="fp-stat">
+        <div class="fp-stat-item"><span class="fp-stat-val" id="fpCal">150</span><span class="fp-stat-lbl">Calories</span></div>
+        <div class="fp-stat-item"><span class="fp-stat-val" id="fpCarb">41g</span><span class="fp-stat-lbl">Carbs</span></div>
+        <div class="fp-stat-item"><span class="fp-stat-val" id="fpSugar">41g</span><span class="fp-stat-lbl">Sugar</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COOL METER -->
+<section id="coolmeter">
+  <div class="s-label" style="color:rgba(255,255,255,.45)">03 — Mini Game</div>
+  <div class="s-title" style="color:#fff">COOL<br><em style="color:var(--cyan)">DOWN</em></div>
+  <div class="cool-inner">
+    <div class="cool-side">
+      <div class="thermo-outer"><div class="thermo-inner" id="tF1"></div></div>
+      <div class="cool-val" id="cVal">0</div>
+      <div class="cool-unit">COOL POINTS</div>
+    </div>
+    <div class="cool-center">
+      <span class="cool-can" id="coolCan">🥵</span>
+      <div class="cool-instr">Tap rapidly to cool the can!</div>
+      <button class="cool-btn" onclick="coolTap()">❄️ COOL IT!</button><br>
+      <button class="cool-reset" onclick="resetCool()" style="margin-top:13px">↺ REPLAY</button>
+    </div>
+    <div class="cool-side">
+      <div class="thermo-outer"><div class="thermo-inner" id="tF2"></div></div>
+      <div class="cool-val" id="cVal2">0</div>
+      <div class="cool-unit">COOL POINTS</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORLD MAP -->
+<section id="worldmap">
+  <div class="s-label">04 — Around the World</div>
+  <div class="s-title">PEPSI<br><em>GOES</em> GLOBAL</div>
+  <div class="map-layout">
+    <div class="world-flags" id="worldFlags"></div>
+    <div class="map-panel" id="mapPanel">
+      <span class="mp-flag" id="mpFlag">🌍</span>
+      <div class="mp-country" id="mpCountry">SELECT A COUNTRY</div>
+      <div class="mp-fact" id="mpFact">Hover over any country to discover unique Pepsi facts and regional flavors from across the globe.</div>
+      <div class="mp-tag" id="mpTag">EXPLORE THE WORLD</div>
+    </div>
+  </div>
+</section>
+
+<!-- VIBE -->
+<section id="vibe">
+  <div class="s-label" style="color:rgba(255,255,255,.45)">05 — Music & Culture</div>
+  <div class="s-title" style="color:#fff">PEPSI<br><em style="color:var(--cyan)">VIBES</em></div>
+  <div class="vibe-tabs">
+    <button class="vtab on" onclick="setVibe('chill',this)">❄️ CHILL</button>
+    <button class="vtab" onclick="setVibe('party',this)">🔥 PARTY</button>
+    <button class="vtab" onclick="setVibe('classic',this)">🎸 CLASSIC</button>
+  </div>
+  <div class="vibe-grid" id="vibeGrid"></div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="s-label">06 — Personality Quiz</div>
+  <div class="s-title">WHICH<br>PEPSI<br><em>ARE YOU?</em></div>
+  <div class="quiz-layout">
+    <div class="quiz-deco">
+      <div class="qdring1"></div>
+      <div class="qdring2"></div>
+      <div class="qdemo" id="qDeco">🤔</div>
+    </div>
+    <div class="quiz-card">
+      <div id="qInner">
+        <div class="qprog" id="qProg">QUESTION 1 OF 4</div>
+        <div class="qbar"><div class="qbar-fill" id="qFill" style="width:25%"></div></div>
+        <div class="qq" id="qQ"></div>
+        <div class="qopts" id="qOpts"></div>
+      </div>
+      <div class="qresult" id="qRes">
+        <div class="qr-emoji" id="qrE"></div>
+        <div class="qr-name" id="qrN"></div>
+        <div class="qr-tag" id="qrT"></div>
+        <div class="qr-desc" id="qrD"></div>
+        <button class="q-replay" onclick="initQuiz()">PLAY AGAIN</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUBBLES -->
+<section id="bubbles">
+  <canvas id="bubbCanvas"></canvas>
+  <div class="bub-over">
+    <div class="s-label">07 — Bubble Universe</div>
+    <div class="s-title">PUSH. POP.<br><em>EXPLORE.</em></div>
+    <div class="s-sub">Move your cursor to push the bubbles around</div>
+  </div>
+</section>
+
+<!-- SCROLL STORY -->
+<section id="story">
+  <div class="story-sticky">
+    <div class="story-bg"></div>
+    <div class="story-can" id="storyCan">🥤</div>
+    <div class="story-cap" id="storycap">CRACK OPEN THE FEELING</div>
+    <div class="story-side">SCROLL TO REVEAL</div>
+  </div>
+</section>
+
+<!-- STORE -->
+<section id="store">
+  <div class="s-label">08 — Pepsi Store</div>
+  <div class="s-title">GET YOUR<br><em>PEPSI</em> NOW</div>
+  <div class="store-grid" id="storeGrid"></div>
+</section>
+
+<footer>
+  <div>
+    <span class="footer-brand">PEPSI</span>
+    <div class="footer-legal">© 2025 PepsiCo, Inc. All rights reserved.<br>Pepsi, the Pepsi Globe, and Refresh Your World are trademarks of PepsiCo.</div>
+    <div class="footer-egg">🥚 Easter Eggs: Click globe 5× · Type "PEPSI"</div>
+  </div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
+    <a href="#">Sustainability</a>
+    <a href="#">Careers</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+/* CURSOR */
+const cur=document.getElementById('cur'),curR=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function ac(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(ac);})();
+
+/* NIGHT */
+function toggleNight(){
+  document.body.classList.toggle('night');
+  document.getElementById('nightBtn').textContent=document.body.classList.contains('night')?'☀️ DAY':'🌙 NIGHT';
+}
+
+/* WAVE CANVAS */
+const wc=document.getElementById('waveCanvas'),wx=wc.getContext('2d');let wt=0;
+function rW(){wc.width=wc.offsetWidth;wc.height=wc.offsetHeight;}rW();window.addEventListener('resize',rW);
+(function dW(){wx.clearRect(0,0,wc.width,wc.height);for(let i=0;i<5;i++){wx.beginPath();wx.moveTo(0,wc.height*.5);for(let x=0;x<=wc.width;x+=4){wx.lineTo(x,wc.height*.5+Math.sin(x/wc.width*Math.PI*4+wt+i*.7)*(48-i*7));}wx.lineTo(wc.width,wc.height);wx.lineTo(0,wc.height);wx.fillStyle=`rgba(${i%2===0?'255,255,255':'0,163,224'},${.06-i*.01})`;wx.fill();}wt+=.012;requestAnimationFrame(dW);})();
+
+/* PARALLAX */
+document.addEventListener('mousemove',e=>{
+  const x=(e.clientX/window.innerWidth-.5)*14,y=(e.clientY/window.innerHeight-.5)*14;
+  const hr=document.querySelector('.hero-right');
+  if(hr)hr.style.transform=`translate(${x}px,${y}px)`;
+});
+
+/* CRACK OPEN */
+function crackOpen(e){
+  const cols=['#004B93','#E31837','#00ADEF','#fff'];
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');p.className='splash';
+    const a=Math.random()*360,d=80+Math.random()*130,s=5+Math.random()*12;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX}px;top:${e.clientY}px;background:${cols[i%cols.length]};--tx:${Math.cos(a*Math.PI/180)*d}px;--ty:${Math.sin(a*Math.PI/180)*d}px;animation-duration:${.5+Math.random()*.4}s;`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),1000);
+  }
+  try{const ac=new AudioContext();const b=ac.createBuffer(1,ac.sampleRate*.25,ac.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(ac.sampleRate*.08));const s=ac.createBufferSource();s.buffer=b;const g=ac.createGain();g.gain.value=.5;s.connect(g);g.connect(ac.destination);s.start();}catch(e){}
+}
+
+/* FLAVORS */
+const FLAVORS=[
+  {name:'Pepsi Classic',chip:'ORIGINAL',icon:'🥤',c1:'#004B93',c2:'#00306B',cal:150,carb:'41g',sug:'41g',desc:'The bold original. Crisp carbonation, deep cola character — the taste that defined a generation and never looked back.'},
+  {name:'Pepsi Max',chip:'ZERO SUGAR',icon:'⚡',c1:'#111827',c2:'#000',cal:0,carb:'0g',sug:'0g',desc:'Zero sugar, maximum attitude. All the intensity of Pepsi with none of the compromise. For those who refuse to settle.'},
+  {name:'Wild Mango',chip:'LIMITED',icon:'🥭',c1:'#C05000',c2:'#7C3200',cal:140,carb:'38g',sug:'37g',desc:'Tropical fire meets Pepsi fizz. Sun-ripened mango cuts through with a sweetness that hits like a summer storm.'},
+  {name:'Wild Cherry',chip:'FAN FAV',icon:'🍒',c1:'#7B0020',c2:'#4A0010',cal:150,carb:'41g',sug:'41g',desc:'Deep, dark wild cherry with a Pepsi backbone. Rich fruit flavor with unmistakable cola depth. A classic reborn.'},
+  {name:'Pepsi Lime',chip:'ZERO CAL',icon:'🍋',c1:'#1B5E20',c2:'#0D3E13',cal:0,carb:'0g',sug:'0g',desc:'Electric lime zest meets zero-sugar Pepsi. Sharp, bright, brutally refreshing. The citrus edge you never knew you needed.'},
+  {name:'Vanilla',chip:'SMOOTH',icon:'🍦',c1:'#5D3A1A',c2:'#3D2410',cal:150,carb:'42g',sug:'41g',desc:'Silky Madagascar vanilla folds into effervescent cola. A dessert and a drink. Smooth enough to sip, bold enough to remember.'},
+];
+const shelf=document.getElementById('flavorShelf');
+FLAVORS.forEach((f,i)=>{
+  const c=document.createElement('div');c.className='fcard'+(i===0?' sel':'');
+  c.style.background=`linear-gradient(150deg,${f.c1},${f.c2})`;
+  c.innerHTML=`<div class="fbubbles" id="fb${i}"></div><span class="fcard-icon">${f.icon}</span><div class="fcard-name">${f.name.split(' ').pop()}</div><div class="fcard-cal">${f.cal?f.cal+' cal':'Zero cal'}</div>`;
+  c.addEventListener('click',()=>selF(i));
+  c.addEventListener('mouseenter',()=>{for(let b=0;b<6;b++){const bub=document.createElement('div');bub.className='fb';const s=6+Math.random()*10;bub.style.cssText=`width:${s}px;height:${s}px;left:${10+Math.random()*80}%;animation-delay:${Math.random()*.8}s;animation-duration:${1.2+Math.random()*.8}s;bottom:0`;document.getElementById('fb'+i).appendChild(bub);setTimeout(()=>bub.remove(),2200);}});
+  shelf.appendChild(c);
+});
+function selF(i){
+  const f=FLAVORS[i];
+  document.querySelectorAll('.fcard').forEach((c,j)=>c.classList.toggle('sel',j===i));
+  document.getElementById('flavors').style.background=document.body.classList.contains('night')?f.c1+'33':f.c1+'14';
+  document.getElementById('fpNum').textContent=String(i+1).padStart(2,'0');
+  document.getElementById('fpChip').textContent=f.chip;
+  document.getElementById('fpName').textContent=f.name;
+  document.getElementById('fpName').style.color=f.c1;
+  document.getElementById('fpDesc').textContent=f.desc;
+  document.getElementById('fpCal').textContent=f.cal||'0';
+  document.getElementById('fpCarb').textContent=f.carb;
+  document.getElementById('fpSugar').textContent=f.sug;
+}
+selF(0);
+
+/* COOL METER */
+let cv=0,cdone=false;
+document.getElementById('tF1').style.height='100%';
+document.getElementById('tF2').style.height='100%';
+function coolTap(){
+  if(cdone)return;
+  cv=Math.min(100,cv+3);
+  const p=cv/100,h=(100-p*100)+'%';
+  document.getElementById('tF1').style.height=h;
+  document.getElementById('tF2').style.height=h;
+  document.getElementById('cVal').textContent=cv;
+  document.getElementById('cVal2').textContent=cv;
+  document.getElementById('coolCan').textContent=cv<30?'🥵':cv<60?'😅':cv<90?'😎':'🧊';
+  if(cv>=100){cdone=true;confetti();playWin();}
+}
+function resetCool(){cv=0;cdone=false;['tF1','tF2'].forEach(id=>document.getElementById(id).style.height='100%');document.getElementById('cVal').textContent='0';document.getElementById('cVal2').textContent='0';document.getElementById('coolCan').textContent='🥵';}
+function confetti(){const cols=['#004B93','#E31837','#00ADEF','#FFD700','#fff'];for(let i=0;i<70;i++){setTimeout(()=>{const c=document.createElement('div');c.className='cf';const s=6+Math.random()*10;c.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%cols.length]};width:${s}px;height:${s}px;animation-duration:${1.6+Math.random()}s;animation-delay:${Math.random()*.4}s;border-radius:${Math.random()>.5?'50%':'2px'}`;document.body.appendChild(c);setTimeout(()=>c.remove(),2800);},i*20);}}
+function playWin(){try{const ac=new AudioContext();[[523,.0],[659,.12],[784,.24],[1046,.36]].forEach(([f,t])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.3,ac.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+t+.3);o.start(ac.currentTime+t);o.stop(ac.currentTime+t+.35);});}catch(e){}}
+
+/* WORLD */
+const COUNTRIES=[
+  {flag:'🇺🇸',name:'UNITED STATES',fact:'Pepsi was born in New Bern, NC in 1893. Try Pepsi Real Sugar — cane sugar, glass bottle.',tag:'BIRTHPLACE OF PEPSI'},
+  {flag:'🇯🇵',name:'JAPAN',fact:'Pepsi Sakura (Cherry Blossom) launches every spring — one of the world\'s most anticipated limited editions.',tag:'SAKURA EDITION'},
+  {flag:'🇧🇷',name:'BRAZIL',fact:'Guaraná Pepsi — a unique tropical twist using Amazon guaraná berries.',tag:'TROPICAL EXCLUSIVE'},
+  {flag:'🇮🇳',name:'INDIA',fact:'Pepsi Nimbooz — still lemon water with salt and spices. A uniquely Indian creation.',tag:'NIMBOOZ EXCLUSIVE'},
+  {flag:'🇷🇺',name:'RUSSIA',fact:'Pepsi was the FIRST Western consumer product sold in the USSR (1959). Khrushchev tasted it personally.',tag:'COLD WAR ICON'},
+  {flag:'🇰🇷',name:'SOUTH KOREA',fact:'K-Pop artist edition cans rotate every season. BTS x Pepsi collab sold out in 48 hours.',tag:'K-POP COLLAB'},
+  {flag:'🇲🇽',name:'MEXICO',fact:'Pepsi Twist with lemon is everywhere — from street tacos to beachside palapa bars.',tag:'LEMON TWIST'},
+  {flag:'🇸🇦',name:'SAUDI ARABIA',fact:'Pepsi holds #1 cola market share across the entire Gulf region. Served at every iftar table.',tag:'GULF #1'},
+  {flag:'🇦🇺',name:'AUSTRALIA',fact:'Pepsi Max outsells regular Pepsi here 4:1. Australians love the bold, zero-sugar version.',tag:'MAX COUNTRY'},
+  {flag:'🇩🇪',name:'GERMANY',fact:'Pepsi Raw — made with real cane sugar and natural flavors — launched as a German-exclusive.',tag:'PEPSI RAW'},
+  {flag:'🇫🇷',name:'FRANCE',fact:'Pepsi x Moulin Rouge limited bottles featuring Art Deco design were collectors\' items.',tag:'ART EDITION'},
+  {flag:'🇨🇳',name:'CHINA',fact:'Pepsi Milk Tea edition went viral on Douyin and sold 10M cans in the first week.',tag:'VIRAL HIT'},
+  {flag:'🇬🇧',name:'UNITED KINGDOM',fact:'Pepsi Max Cherry is a UK-exclusive variant with a massive cult following.',tag:'MAX CHERRY'},
+  {flag:'🇨🇦',name:'CANADA',fact:'Pepsi dominates Quebec — a cultural institution with 60%+ market share.',tag:'QUÉBEC ICON'},
+  {flag:'🇹🇭',name:'THAILAND',fact:'Pepsi Lime served over crushed street ice with chili salt rim. Street food culture staple.',tag:'STREET STYLE'},
+  {flag:'🇿🇦',name:'SOUTH AFRICA',fact:'Pepsi Twist was introduced first in South Africa before going global.',tag:'TWIST ORIGIN'},
+  {flag:'🇮🇹',name:'ITALY',fact:'Pepsi Italia partners with summer music festivals. Espresso-cola shots are a thing here.',tag:'FESTIVAL PARTNER'},
+  {flag:'🇵🇭',name:'PHILIPPINES',fact:'Pepsi has been #1 cola in the Philippines since the 1970s.',tag:'SINCE THE \'70s'},
+  {flag:'🇦🇷',name:'ARGENTINA',fact:'Pepsi Twist owns the summer BBQ season. Every asado has one in the cooler.',tag:'ASADO ESSENTIAL'},
+  {flag:'🇪🇬',name:'EGYPT',fact:'Pepsi Egypt runs the most-watched Ramadan TV ads in the region every year.',tag:'RAMADAN VIBES'},
+];
+const wf=document.getElementById('worldFlags');
+COUNTRIES.forEach((c,i)=>{
+  const d=document.createElement('div');d.className='wflag';d.textContent=c.flag;
+  d.addEventListener('mouseenter',()=>showC(c));
+  d.addEventListener('click',()=>{document.querySelectorAll('.wflag').forEach(e=>e.classList.remove('sel'));d.classList.add('sel');showC(c);});
+  wf.appendChild(d);
+});
+function showC(c){document.getElementById('mpFlag').textContent=c.flag;document.getElementById('mpCountry').textContent=c.name;document.getElementById('mpFact').textContent=c.fact;document.getElementById('mpTag').textContent=c.tag;}
+
+/* VIBE */
+const VIBES={
+  chill:[{icon:'🌊',artist:'Wave Collective',track:'Blue Forever',h:[3,6,2,8,4,3]},{icon:'🌙',artist:'Luna Beats',track:'Midnight Fizz',h:[5,2,7,3,6,4]},{icon:'✨',artist:'Starfield',track:'Aurora Sip',h:[2,8,4,6,3,7]},{icon:'🍃',artist:'Quiet Storm',track:'Garden of Cool',h:[7,3,5,2,8,4]}],
+  party:[{icon:'🔥',artist:'BLXST',track:'Pop Off',h:[8,6,9,7,8,9]},{icon:'🎊',artist:'Fiesta Mode',track:'Crack It Open',h:[9,8,6,9,7,8]},{icon:'💥',artist:'Drop Zone',track:'Bass Fizz',h:[7,9,8,6,9,7]},{icon:'🕺',artist:'Neon Crowd',track:'Move It',h:[8,7,9,8,6,9]}],
+  classic:[{icon:'🎸',artist:'Rock Icons',track:'Generation Pepsi',h:[5,4,6,5,4,6]},{icon:'🎺',artist:'Jazz Fizz',track:'Bebop Cola',h:[4,6,5,4,7,5]},{icon:'🎹',artist:'Classic Keys',track:'Timeless Refresh',h:[6,5,4,7,5,4]},{icon:'🎵',artist:'The Originals',track:'1893 Vibe',h:[5,7,4,6,5,7]}],
+};
+let curV='chill',pIdx=-1;
+function setVibe(v,btn){curV=v;pIdx=-1;document.querySelectorAll('.vtab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderV();}
+function renderV(){
+  const g=document.getElementById('vibeGrid');g.innerHTML='';
+  VIBES[curV].forEach((t,i)=>{
+    const d=document.createElement('div');d.className='vcard';
+    const bars=t.h.map((h,bi)=>`<div class="vb${pIdx===i?' on':''}" style="height:${pIdx===i?h*3:4}px;animation-delay:${bi*.1}s"></div>`).join('');
+    d.innerHTML=`<span class="vcard-icon">${t.icon}</span><div class="vcard-artist">${t.artist}</div><div class="vcard-track">${t.track}</div><button class="vcard-play${pIdx===i?' on':''}" onclick="tPlay(${i})">${pIdx===i?'⏸':'▶'}</button><div class="viz">${bars}</div>`;
+    g.appendChild(d);
+  });
+}
+function tPlay(i){pIdx=pIdx===i?-1:i;if(pIdx>=0){try{const ac=new AudioContext();[261,329,392,523,659].forEach((f,j)=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(0,ac.currentTime+j*.08);g.gain.linearRampToValueAtTime(.04,ac.currentTime+j*.08+.04);g.gain.linearRampToValueAtTime(0,ac.currentTime+j*.08+.25);o.start(ac.currentTime+j*.08);o.stop(ac.currentTime+j*.08+.28);});}catch(e){}}renderV();}
+renderV();
+
+/* QUIZ */
+const QS=[
+  {q:'What\'s your perfect Saturday?',opts:['🏖️ Beach all day','🎮 Marathon gaming','🧘 Chill + streaming','🎭 Night out vibing'],deco:'🤔'},
+  {q:'Choose your energy:',opts:['⚡ Max voltage','❄️ Cool as ice','🌿 Natural & fresh','🌙 Late night mood'],deco:'💭'},
+  {q:'Go-to snack situation:',opts:['🌮 Spicy everything','🍕 Classic perfection','🥑 Fresh & clean','🍫 Sweet tooth always'],deco:'😋'},
+  {q:'Your superpower would be:',opts:['⚡ Lightning speed','🧊 Freeze anything','🌊 Control water','🔮 Read thoughts'],deco:'🦸'},
+];
+const QRES=[
+  {name:'PEPSI MAX',emoji:'⚡',tag:'ZERO SUGAR LEGEND',desc:'Electrifying. Bold. Unstoppable. Zero compromise, maximum everything.'},
+  {name:'PEPSI ICE',emoji:'🧊',tag:'COOL UNDER PRESSURE',desc:'Refreshingly calm. You\'re always the sharpest one in the room.'},
+  {name:'PEPSI LIME',emoji:'🍋',tag:'ZESTY WILDCARD',desc:'Unexpected and electric. You bring the twist nobody saw coming.'},
+  {name:'PEPSI CLASSIC',emoji:'🥤',tag:'TIMELESS ICON',desc:'Original. Dependable. The gold standard. Classic for a reason.'},
+];
+let qA=[];
+function initQuiz(){qA=[];document.getElementById('qInner').style.display='block';document.getElementById('qRes').style.display='none';showQ(0);}
+function showQ(i){
+  if(i>=QS.length){showQR();return;}
+  const q=QS[i];
+  document.getElementById('qProg').textContent=`QUESTION ${i+1} OF ${QS.length}`;
+  document.getElementById('qFill').style.width=((i+1)/QS.length*100)+'%';
+  document.getElementById('qQ').textContent=q.q;
+  document.getElementById('qDeco').textContent=q.deco;
+  const oc=document.getElementById('qOpts');oc.innerHTML='';
+  q.opts.forEach((o,j)=>{const b=document.createElement('button');b.className='qopt';b.textContent=o;b.onclick=()=>{qA.push(j);showQ(i+1);};oc.appendChild(b);});
+}
+function showQR(){
+  document.getElementById('qInner').style.display='none';
+  document.getElementById('qRes').style.display='block';
+  const sc=[0,0,0,0];qA.forEach(a=>sc[a]++);
+  const best=sc.indexOf(Math.max(...sc));const r=QRES[best];
+  document.getElementById('qrE').textContent=r.emoji;document.getElementById('qrN').textContent=r.name;document.getElementById('qrT').textContent=r.tag;document.getElementById('qrD').textContent=r.desc;document.getElementById('qDeco').textContent=r.emoji;
+}
+initQuiz();
+
+/* BUBBLES */
+const bc=document.getElementById('bubbCanvas'),bx=bc.getContext('2d');
+let bubbs=[],bmx=-999,bmy=-999;
+function rB(){bc.width=bc.offsetWidth;bc.height=bc.offsetHeight;}rB();window.addEventListener('resize',rB);
+class B{
+  constructor(rand=false){this.x=Math.random()*bc.width;this.y=rand?Math.random()*bc.height:bc.height+50;this.r=12+Math.random()*38;this.vx=(Math.random()-.5)*1.2;this.vy=-.4-Math.random()*.8;this.hue=205+Math.random()*25;this.a=.35+Math.random()*.35;}
+  tick(){const dx=this.x-bmx,dy=this.y-bmy,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){const f=(120-dist)/120;this.vx+=dx/dist*f*.6;this.vy+=dy/dist*f*.6;}this.vx*=.97;this.vy*=.97;this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>bc.width)this.vx*=-1;if(this.y+this.r<0){this.x=Math.random()*bc.width;this.y=bc.height+50;this.r=12+Math.random()*38;this.vx=(Math.random()-.5)*1.2;this.vy=-.4-Math.random()*.8;}}
+  draw(){const g=bx.createRadialGradient(this.x-this.r*.3,this.y-this.r*.3,this.r*.08,this.x,this.y,this.r);g.addColorStop(0,`hsla(${this.hue},80%,95%,${this.a})`);g.addColorStop(.6,`hsla(${this.hue},70%,55%,${this.a*.5})`);g.addColorStop(1,`hsla(${this.hue},60%,40%,0)`);bx.beginPath();bx.arc(this.x,this.y,this.r,0,Math.PI*2);bx.fillStyle=g;bx.fill();bx.strokeStyle=`hsla(${this.hue},80%,90%,${this.a*.5})`;bx.lineWidth=1;bx.stroke();}
+}
+for(let i=0;i<45;i++)bubbs.push(new B(true));
+bc.addEventListener('mousemove',e=>{const r=bc.getBoundingClientRect();bmx=e.clientX-r.left;bmy=e.clientY-r.top;});
+bc.addEventListener('click',e=>{const r=bc.getBoundingClientRect();bx.save();bx.beginPath();bx.arc(e.clientX-r.left,e.clientY-r.top,70,0,Math.PI*2);bx.strokeStyle='rgba(0,173,239,.7)';bx.lineWidth=3;bx.stroke();bx.restore();for(let i=0;i<6;i++)bubbs.push(new B());});
+(function aB(){bx.clearRect(0,0,bc.width,bc.height);bubbs.forEach(b=>{b.tick();b.draw();});requestAnimationFrame(aB);})();
+
+/* SCROLL STORY */
+const SF=[{can:'🥤',txt:'CRACK OPEN THE FEELING'},{can:'🫙',txt:'POUR IT OUT'},{can:'💧',txt:'TASTE THE MOMENT'},{can:'🎉',txt:'REFRESH YOUR WORLD'}];
+window.addEventListener('scroll',()=>{
+  const el=document.getElementById('story'),rect=el.getBoundingClientRect();
+  const pct=Math.max(0,Math.min(1,-rect.top/(el.offsetHeight-window.innerHeight)));
+  const fi=Math.floor(pct*SF.length);const f=SF[Math.min(fi,SF.length-1)];
+  const can=document.getElementById('storyCan'),cap=document.getElementById('storycap');
+  can.style.transform=`scale(${.6+pct*1.2}) rotate(${pct*360}deg)`;
+  can.textContent=f.can;cap.textContent=f.txt;
+  cap.style.color=`rgba(255,255,255,${Math.min(1,pct*2.5)})`;
+  cap.style.transform=`translateY(${(1-pct)*28}px)`;
+});
+
+/* STORE */
+const ITEMS=[
+  {emoji:'🥤',name:'Pepsi Classic 6-Pack',price:'$8.99'},
+  {emoji:'⚡',name:'Pepsi Max 12-Pack',price:'$14.99'},
+  {emoji:'🥭',name:'Wild Mango 6-Pack',price:'$9.99'},
+  {emoji:'🍒',name:'Wild Cherry 6-Pack',price:'$9.49'},
+  {emoji:'🎁',name:'Pepsi Gift Bundle',price:'$29.99'},
+  {emoji:'👕',name:'Pepsi Classic Tee',price:'$24.99'},
+];
+let cartCnt=0;
+const sg=document.getElementById('storeGrid');
+ITEMS.forEach(it=>{
+  const c=document.createElement('div');c.className='scard';
+  c.innerHTML=`<div class="scard-top"><span class="scard-emoji">${it.emoji}</span></div><div class="scard-bot"><div class="scard-name">${it.name}</div><div class="scard-price">${it.price}</div><button class="scard-add" onclick="addCart(this,'${it.emoji}')">ADD TO CART</button></div>`;
+  sg.appendChild(c);
+});
+function addCart(btn,emoji){
+  cartCnt++;document.getElementById('cartN').textContent=cartCnt;
+  const pill=document.getElementById('cartPill');pill.classList.remove('bump');void pill.offsetWidth;pill.classList.add('bump');
+  const r=btn.getBoundingClientRect();const fly=document.createElement('div');fly.className='fly';fly.textContent=emoji;
+  fly.style.cssText=`left:${r.left}px;top:${r.top}px;`;document.body.appendChild(fly);
+  setTimeout(()=>{fly.style.left='calc(100vw - 70px)';fly.style.top='82px';fly.style.opacity='0';fly.style.transform='scale(0.2)';},20);
+  setTimeout(()=>fly.remove(),700);
+}
+
+/* EASTER EGGS */
+let lgClk=0,lgT;
+document.getElementById('logoClick').addEventListener('click',()=>{lgClk++;clearTimeout(lgT);lgT=setTimeout(()=>lgClk=0,2000);if(lgClk>=5){document.getElementById('egg').classList.add('show');lgClk=0;confetti();}});
+let typed='';const th=document.getElementById('typehint');
+document.addEventListener('keydown',e=>{typed=(typed+e.key.toUpperCase()).slice(-5);th.textContent=typed;th.style.opacity='1';clearTimeout(window._tt);window._tt=setTimeout(()=>th.style.opacity='0',1400);if(typed==='PEPSI'){document.body.style.filter='sepia(.9) hue-rotate(200deg) saturate(1.5)';th.textContent='🕹️ RETRO!';th.style.opacity='1';setTimeout(()=>{document.body.style.filter='';typed='';th.style.opacity='0';},3000);}});
+</script>
+</body>
+</html>
